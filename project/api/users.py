@@ -110,7 +110,7 @@ async def delete_user(
     await session.commit()
 
 
-@router_users.get("/all_users", response_model=list[UserWithPaymentsResponse])
+@router_users.get("/all-users", response_model=list[UserWithPaymentsResponse])
 async def get_list_users(
     current_user: User = Security(get_current_user, scopes=["admin"]),
     session: AsyncSession = Depends(get_db)

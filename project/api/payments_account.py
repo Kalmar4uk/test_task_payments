@@ -11,7 +11,8 @@ from models.models import Payment, User
 
 
 @router_pyments_account.get(
-        "/my_accounts"
+        "/my-accounts",
+        response_model=list[AccountResponce]
 )
 async def get_user_account(
     current_user: User = Depends(get_current_user),
@@ -28,7 +29,7 @@ async def get_user_account(
 
 
 @router_pyments_account.get(
-        "/my_payments",
+        "/my-payments",
         response_model=list[PaymentsResponce]
 )
 async def get_user_payments(
