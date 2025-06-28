@@ -1,7 +1,8 @@
-from models.core import Model
 from passlib.context import CryptContext
 from sqlalchemy import Boolean, Float, ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+
+from models.core import Model
 
 context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 

@@ -1,7 +1,8 @@
-from api.exceptions import UniqueEmailEmployee
-from models.models import User
 from sqlalchemy import exists, select
 from sqlalchemy.ext.asyncio import AsyncSession
+
+from api.exceptions import UniqueEmailEmployee
+from models.models import User
 
 
 class ValidationPasswordError(Exception):

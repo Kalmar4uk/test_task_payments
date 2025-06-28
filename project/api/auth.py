@@ -1,15 +1,16 @@
 from datetime import datetime, timedelta
 
 import jwt
-import settings
-from api.exceptions import NotAuth, NotRights, NotValidToken, UserNotFound
-from database import get_db
 from fastapi import Depends
 from fastapi.security import OAuth2PasswordBearer, SecurityScopes
 from jwt.exceptions import InvalidTokenError
-from models.models import User
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+
+import settings
+from api.exceptions import NotAuth, NotRights, NotValidToken, UserNotFound
+from database import get_db
+from models.models import User
 
 oauth2_scheme = OAuth2PasswordBearer(
     tokenUrl="token",

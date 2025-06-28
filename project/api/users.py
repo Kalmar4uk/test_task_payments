@@ -1,29 +1,33 @@
+from fastapi import Depends, Security
+from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
+
 from api.auth import get_current_user
 from api.exceptions import ExceptionSaveDataBase
-from api.models_for_api.pydantic_models import (UserCreate, UserResponse,
-                                                UserUpdate)
+from api.models_for_api.pydantic_models import (AccountResponce, UserCreate,
+                                                UserResponse, UserUpdate,
+                                                UserWithPaymentsResponse)
 from api.routers import router_users
 from api.utils import check_unique_email
 from database import get_db
-from fastapi import Depends, Security
 from models.models import User
-from sqlalchemy.exc import IntegrityError
-from sqlalchemy.ext.asyncio import AsyncSession
 
 
 @router_users.get("/me", response_model=UserResponse)
 async def current_user(
     current_user: User = Depends(get_current_user)
 ) -> UserResponse:
-    user_response = UserResponse(
+    return UserResponse(
         id=current_user.id,
         email=current_user.email,
-        full_name=f"{current_user.last_name} {current_user.first_name}"
+        full_name=(
+            f"{current_user.last_name} "
+            f"{current_user.first_name} "
+            f"{current_user.middle_name if current_user.middle_name else ''}"
+        )
     )
-    if current_user.middle_name:
-        user_response.full_name += f" {current_user.middle_name}"
-        return user_response
-    return user_response
 
 
 @router_users.post("/", response_model=UserResponse)
@@ -47,15 +51,15 @@ async def create_user(
         await session.rollback()
         raise ExceptionSaveDataBase(error=e)
 
-    user_response = UserResponse(
+    return UserResponse(
         id=user.id,
         email=user.email,
-        full_name=f"{user.last_name} {user.first_name}"
+        full_name=(
+            f"{user.last_name} "
+            f"{user.first_name} "
+            f"{user.middle_name if user.middle_name else ''}"
+        )
     )
-    if user.middle_name:
-        user_response.full_name += f" {user.middle_name}"
-        return user_response
-    return user_response
 
 
 @router_users.put("/{user_id}", response_model=UserResponse)
@@ -83,15 +87,15 @@ async def update_user(
         await session.rollback()
         raise ExceptionSaveDataBase(error=e)
 
-    user_response = UserResponse(
+    return UserResponse(
         id=user.id,
         email=user.email,
-        full_name=f"{user.last_name} {user.first_name}"
+        full_name=(
+            f"{user.last_name} "
+            f"{user.first_name} "
+            f"{user.middle_name if user.middle_name else ''}"
+        )
     )
-    if user.middle_name:
-        user_response.full_name += f" {user.middle_name}"
-        return user_response
-    return user_response
 
 
 @router_users.delete("/{user_id}", status_code=204)
@@ -104,3 +108,33 @@ async def delete_user(
     user = await session.get(User, user_id)
     await session.delete(user)
     await session.commit()
+
+
+@router_users.get("/all_users", response_model=list[UserWithPaymentsResponse])
+async def get_list_users(
+    current_user: User = Security(get_current_user, scopes=["admin"]),
+    session: AsyncSession = Depends(get_db)
+):
+    query = select(User).where(
+        User.id != current_user.id
+    ).options(
+        selectinload(User.accounts)
+    )
+    result = await session.execute(query)
+    return [
+        UserWithPaymentsResponse(
+            id=user.id,
+            email=user.email,
+            full_name=(
+                f"{user.last_name} "
+                f"{user.first_name} "
+                f"{user.middle_name if user.middle_name else ''}"
+            ),
+            accounts=[
+                AccountResponce(
+                    id=account.id,
+                    balance=account.balance
+                ) for account in user.accounts
+            ]
+        ) for user in result.scalars()
+    ]

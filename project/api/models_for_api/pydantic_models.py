@@ -1,7 +1,8 @@
 import re
 
-from api.utils import ValidationPasswordError, validate_password
 from pydantic import BaseModel, Field, field_validator
+
+from api.utils import ValidationPasswordError, validate_password
 
 
 class Base(BaseModel):
@@ -23,6 +24,10 @@ class AccountResponce(Base):
 class PaymentsResponce(Base):
     transaction: str = Field(examples=["ex631sv12-dsad11-sda2124f"])
     amount: float = Field(examples=[1000])
+
+
+class UserWithPaymentsResponse(UserResponse):
+    accounts: list[AccountResponce]
 
 
 class Token(BaseModel):
