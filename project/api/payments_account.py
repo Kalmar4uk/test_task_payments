@@ -1,13 +1,12 @@
-from fastapi import Depends
-from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
-
 from api.auth import get_current_user
 from api.models_for_api.pydantic_models import (AccountResponce,
                                                 PaymentsResponce)
 from api.routers import router_pyments_account
 from database import get_db
+from fastapi import Depends
 from models.models import Payment, User
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 @router_pyments_account.get(

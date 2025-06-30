@@ -1,9 +1,3 @@
-from fastapi import Depends, Security
-from sqlalchemy import select
-from sqlalchemy.exc import IntegrityError
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import selectinload
-
 from api.auth import get_current_user
 from api.exceptions import ExceptionSaveDataBase
 from api.models_for_api.pydantic_models import (AccountResponce, UserCreate,
@@ -12,7 +6,12 @@ from api.models_for_api.pydantic_models import (AccountResponce, UserCreate,
 from api.routers import router_users
 from api.utils import check_unique_email
 from database import get_db
+from fastapi import Depends, Security
 from models.models import User
+from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 
 @router_users.get("/me", response_model=UserResponse)

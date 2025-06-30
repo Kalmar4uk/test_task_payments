@@ -1,13 +1,12 @@
-from fastapi import Depends
-from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
-
 from api.auth import get_access_token
 from api.exceptions import NotValidEmailOrPassword, UserNotFound
 from api.models_for_api.pydantic_models import Token, UserLogin
 from api.routers import router_token
 from database import get_db
+from fastapi import Depends
 from models.models import User
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 @router_token.post("/login", response_model=Token)

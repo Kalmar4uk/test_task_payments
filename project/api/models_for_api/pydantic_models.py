@@ -1,8 +1,7 @@
 import re
 
-from pydantic import BaseModel, Field, field_validator
-
 from api.utils import ValidationPasswordError, validate_password
+from pydantic import BaseModel, Field, field_validator
 
 
 class Base(BaseModel):
@@ -72,3 +71,17 @@ class UserCreate(UserUpdate):
         except ValidationPasswordError as e:
             raise ValueError(str(e))
         return value
+
+
+class WebHookRequest(BaseModel):
+    transaction_id: str = Field(
+        examples=["5eae174f-7cd0-472c-bd36-35660f00132b"]
+    )
+    user_id: int = Field(examples=[1])
+    account_id: int = Field(examples=[1])
+    amount: int = Field(examples=[100])
+    signature: str = Field(
+        examples=[
+            "7b47e41efe564a062029da3367bde8844bea0fb049f894687cee5d57f2858bc8"
+        ]
+    )

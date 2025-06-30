@@ -1,8 +1,7 @@
-from passlib.context import CryptContext
-from sqlalchemy import Boolean, Float, ForeignKey, String
-from sqlalchemy.orm import Mapped, mapped_column, relationship
-
 from models.core import Model
+from passlib.context import CryptContext
+from sqlalchemy import Boolean, Float, ForeignKey, Integer, String
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -30,6 +29,7 @@ class User(Model):
 class Account(Model):
     __tablename__ = "accounts"
 
+    number: Mapped[int] = mapped_column(Integer, unique=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     user: Mapped["User"] = relationship("User", back_populates="accounts")
     payments: Mapped[list["Payment"]] = relationship(
@@ -45,5 +45,5 @@ class Payment(Model):
     account: Mapped["Account"] = relationship(
         "Account", back_populates="payments"
     )
-    transaction: Mapped[str] = mapped_column(String)
+    transaction: Mapped[str] = mapped_column(String, unique=True)
     amount: Mapped[float] = mapped_column(Float)

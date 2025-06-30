@@ -72,3 +72,19 @@ class ExceptionSaveDataBase(HTTPException):
             status_code=500,
             detail=f"Произошла ошибка при сохранении записи в БД: {error}"
         )
+
+
+class NotValidSignature(HTTPException):
+    def __init__(self):
+        super().__init__(
+            status_code=400,
+            detail="Подпись объекта некорректа"
+        )
+
+
+class UniqueTransactionId(HTTPException):
+    def __init__(self, transaction):
+        super().__init__(
+            status_code=400,
+            detail=f"Начисления по транзации {transaction} уже произведены"
+        )

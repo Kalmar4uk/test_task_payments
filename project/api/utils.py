@@ -1,8 +1,7 @@
+from api.exceptions import UniqueEmailEmployee, UniqueTransactionId
+from models.models import Payment, User
 from sqlalchemy import exists, select
 from sqlalchemy.ext.asyncio import AsyncSession
-
-from api.exceptions import UniqueEmailEmployee
-from models.models import User
 
 
 class ValidationPasswordError(Exception):
@@ -51,3 +50,15 @@ async def check_unique_email(session: AsyncSession, email: str) -> None:
     )
     if query.scalar():
         raise UniqueEmailEmployee()
+
+
+async def check_unique_transaction(session: AsyncSession, transaction_id: str):
+    query = await session.execute(
+        select(
+            exists().where(
+                Payment.transaction == transaction_id
+            )
+        )
+    )
+    if query.scalar():
+        raise UniqueTransactionId(transaction=transaction_id)
