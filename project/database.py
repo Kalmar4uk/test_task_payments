@@ -10,7 +10,7 @@ DATABASE_URL = (
     f"postgresql+asyncpg://"
     f"{os.getenv('POSTGRES_USER')}:"
     f"{os.getenv('POSTGRES_PASSWORD')}"
-    f"@localhost:5432/payments_db"
+    f"@db:5432/payments_db"
 )
 engine = create_async_engine(DATABASE_URL)
 async_session_maker = async_sessionmaker(engine, expire_on_commit=False)

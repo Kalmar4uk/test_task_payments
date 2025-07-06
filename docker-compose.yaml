@@ -1,0 +1,18 @@
+version: '3'
+
+volumes:
+  db_data:
+
+services:
+  db:
+    image: postgres:17.4
+    env_file: .env
+    volumes:
+      - db_data:/var/lib/postgresql/data
+  backend:
+    build: .
+    env_file: .env
+    ports: 
+      - 8000:8000
+    depends_on:
+      - db
